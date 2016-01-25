@@ -1,24 +1,31 @@
 ﻿#pragma strict
 
-var translationAcceleration = new Vector3();
-var rotationAcceleration = new Vector3();
+var translationAccelerationTarget = new Vector3();
+var rotationAccelerationTarget = new Vector3();
+
+var translationAccelerationActual = new Vector3();
+var rotationAccelerationActual = new Vector3();
+
 for (var i = 0; i < 3; i++) {
-	translationAcceleration[i] = randomValuePosOrNeg(1.0);
-	rotationAcceleration[i] = randomValuePosOrNeg(10.0);
+	translationAccelerationTarget[i] = randomValuePosOrNeg(1.0);
+	rotationAccelerationTarget[i] = randomValuePosOrNeg(7.0);
+
+	translationAccelerationActual[i] = translationAccelerationTarget[i];
+	rotationAccelerationActual[i] = rotationAccelerationTarget[i];
 }
 
 function Start () {
 	InvokeRepeating("nudgeAccelerations", 0.0, 3.0);
 }
 
-function nudgeAccelerations() {
+function nudgeAccelerationTargets() {
 	for (var i = 0; i < 3; i++) {
-		nudgeAcceleration(translationAcceleration[i], 1.0, 1.0);
-		nudgeAcceleration(rotationAcceleration[i], 5.0, 10.0);
+		nudge(translationAccelerationTarget[i], 1.0, 3.0);
+		nudge(rotationAccelerationTarget[i], 3.0, 7.0);
 	}
 }
 
-function nudgeAcceleration(el : float, scalar : float, clamp : float) {
+function nudge(el : float, scalar : float, clamp : float) {
 	el = Mathf.Clamp(el + randomValuePosOrNeg(scalar), -clamp, clamp);
 }
 
@@ -26,8 +33,16 @@ function randomValuePosOrNeg(scalar : float) {
 	return (Random.value * 2.0 - 1.0) * scalar;
 }
 
+function approachTargets(scalar : float) {
+	for (var i = 0; i < 3; i++) {
+		translationAccelerationActual[i] = translationAccelerationActual[i] + (translationAccelerationTarget[i] - translationAccelerationActual[i]) * scalar;
+		rotationAccelerationActual[i] = rotationAccelerationActual[i] + (rotationAccelerationTarget[i] - rotationAccelerationActual[i]) * scalar;
+	}
+}
+
 function Update()
 {
-	transform.Rotate(rotationAcceleration*Time.deltaTime);
-	transform.Translate(translationAcceleration*Time.deltaTime);
+	approachTargets(0.2);
+	transform.Translate(translationAccelerationActual*Time.deltaTime);
+	transform.Rotate(rotationAccelerationActual*Time.deltaTime);
 }
