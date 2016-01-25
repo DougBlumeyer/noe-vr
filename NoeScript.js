@@ -1,32 +1,32 @@
 ﻿#pragma strict
 
-var translationAccelerationTarget = new Vector3();
-var rotationAccelerationTarget = new Vector3();
+var translationVelocityTarget = new Vector3();
+var rotationVelocityTarget = new Vector3();
 
-var translationAccelerationActual = new Vector3();
-var rotationAccelerationActual = new Vector3();
+var translationVelocityActual = new Vector3();
+var rotationVelocityActual = new Vector3();
 
 for (var i = 0; i < 3; i++) {
-	translationAccelerationTarget[i] = randomValuePosOrNeg(1.0);
-	rotationAccelerationTarget[i] = randomValuePosOrNeg(3.0);
+	translationVelocityTarget[i] = randomValuePosOrNeg(1.0);
+	rotationVelocityTarget[i] = randomValuePosOrNeg(3.0);
 
-	translationAccelerationActual[i] = translationAccelerationTarget[i];
-	rotationAccelerationActual[i] = rotationAccelerationTarget[i];
+	translationVelocityActual[i] = translationVelocityTarget[i];
+	rotationVelocityActual[i] = rotationVelocityTarget[i];
 }
 
 //var translationHome = new Vector3(0.0, 0.0, 0.0);
 //var rotationHome = new Vector3(0.0, 0.0, 0.0);
 
 function Start () {
-	InvokeRepeating("nudgeAccelerationTargets", 0.0, 0.5);
+	InvokeRepeating("nudgeVelocityTargets", 0.0, 0.5);
 }
 
-function nudgeAccelerationTargets() {
+function nudgeVelocityTargets() {
 	for (var i = 0; i < 3; i++) {
-		translationAccelerationTarget[i] = nudgeTarget(translationAccelerationTarget[i], 0.5, 1.0);
-		rotationAccelerationTarget[i] = nudgeTarget(rotationAccelerationTarget[i], 3.0, 4.0);
-		//nudge(translationAccelerationTarget[i], 1.0, 3.0, translationHome[i], 0.6, this.transform.position[i]);
-		//nudge(rotationAccelerationTarget[i], 3.0, 7.0, rotationHome[i], 0.1, this.transform.rotation[i]);
+		translationVelocityTarget[i] = nudgeTarget(translationVelocityTarget[i], 0.5, 1.0);
+		rotationVelocityTarget[i] = nudgeTarget(rotationVelocityTarget[i], 3.0, 4.0);
+		//nudge(translationVelocityTarget[i], 1.0, 3.0, translationHome[i], 0.6, this.transform.position[i]);
+		//nudge(rotationVelocityTarget[i], 3.0, 7.0, rotationHome[i], 0.1, this.transform.rotation[i]);
 	}
 }
 
@@ -36,9 +36,9 @@ function nudgeTarget(number : float, scalar : float, clamp : float) {
 	return Mathf.Clamp(number + randomValuePosOrNeg(scalar), -clamp, clamp);
 }
 
-function adjustmentTowardHome(number : float, home : float, scalar : float) {
-	return (home - number) * scalar;
-}
+//function adjustmentTowardHome(number : float, home : float, scalar : float) {
+//	return (home - number) * scalar;
+//}
 
 function randomValuePosOrNeg(scalar : float) {
 	return (Random.value * 2.0 - 1.0) * scalar;
@@ -51,9 +51,9 @@ function nudgeActual(actual : float, target : float, scalar : float) {
 function Update()
 {
 	for (var i = 0; i < 3; i++) {
-		rotationAccelerationActual[i] = nudgeActual(rotationAccelerationActual[i], rotationAccelerationTarget[i], 0.02);
-		translationAccelerationActual[i] = nudgeActual(translationAccelerationActual[i], translationAccelerationTarget[i], 0.05);
+		rotationVelocityActual[i] = nudgeActual(rotationVelocityActual[i], rotationVelocityTarget[i], 0.02);
+		translationVelocityActual[i] = nudgeActual(translationVelocityActual[i], translationVelocityTarget[i], 0.05);
 	}
-	transform.Translate(translationAccelerationActual*Time.deltaTime);
-	transform.Rotate(rotationAccelerationActual*Time.deltaTime);
+	transform.Translate(translationVelocityActual*Time.deltaTime);
+	transform.Rotate(rotationVelocityActual*Time.deltaTime);
 }
